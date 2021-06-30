@@ -9,7 +9,7 @@ import javax.persistence.Id;
 public class StudentEntity {
 		@Id
 		@GeneratedValue(strategy = GenerationType.IDENTITY)
-		Long id;
+		Long id ;
 		String name;
 		String email;
 		public Long getId() {

@@ -46,9 +46,68 @@ public class CourseService {
 	}
 	
 	
-	public Course saveIntocourseItemTable(Course course) {
-		CourseEntity entity = courseRepository.save(mapObjectToEntity(course));
-		return mapEntityToObject(entity);
+	
+	public void sendmail2(String body,String sub) throws NoContentException
+	{
+		SimpleMailMessage msg = new SimpleMailMessage();
+		msg.setFrom("sorganviprasad@gmail.com");
+		List<String> entity = studentRepository.getAll();
+		if(entity.isEmpty())
+	      {
+	    	  throw new NoContentException(HttpStatus.NO_CONTENT);
+	      }
+		int i= entity.size()-1;
+		while(i>=0)
+		{
+		msg.setTo(entity.get(i));
+		msg.setText(body);
+		msg.setSubject(sub);
+		JM.send(msg);
+		i--;
+		System.out.println("mail send......");
+		}
+	}
+	
+	public List<Student> getStudents() throws NoContentException
+	{
+		List<StudentEntity> entity = studentRepository.getAll1();
+		if(entity.isEmpty())
+	      {
+	    	  throw new NoContentException(HttpStatus.NO_CONTENT);
+	      }
+		int i=entity.size()-1;
+		 ArrayList<Student> i1=new ArrayList<Student>(i);
+	      while(i>=0)
+	      {
+	    	  i1.add(mapEntityToObject(entity.get(i)));
+	    	  i--;
+	      }
+	      return i1;
+	}
+	
+	public List<Student> stubyemail(String email) throws NoContentException
+	{
+	      List<StudentEntity> entity= studentRepository.findByEmail(email);
+	      if(entity.isEmpty())
+	      {
+	    	  throw new NoContentException(HttpStatus.NO_CONTENT);
+	      }
+	      int i=entity.size()-1;
+	      ArrayList<Student> i1=new ArrayList<Student>(i);
+	      while(i>=0)
+	      {
+	    	  i1.add(mapEntityToObject(entity.get(i)));
+	    	  i--;
+	      }
+	      return i1;
+	}
+	
+	
+	
+	public Course saveIntocourseItemTable(Course course) throws NoContentException {
+		CourseEntity entity = courseRepository.save(mapObjectToEntity1(course));
+		sendmail2("new course added","go and check");
+		return mapEntityToObject1(entity);
 	}
 	
 	public Student saveIntocourseItemTable(Student course) {
@@ -56,7 +115,7 @@ public class CourseService {
 		return mapEntityToObject(entity);
 	}
 
-	public CourseEntity mapObjectToEntity(Course course) {
+	public CourseEntity mapObjectToEntity1(Course course) {
 		CourseEntity entity = new CourseEntity();
 		
 		
@@ -165,7 +224,7 @@ public class CourseService {
 
 	}
 
-	public Course mapEntityToObject(CourseEntity entity) {
+	public Course mapEntityToObject1(CourseEntity entity) {
 
 		Course course = new Course();
 		course.setId(entity.getId());
@@ -196,14 +255,22 @@ public class CourseService {
 		if (!entity.isPresent()) {
 			throw new NoContentException(HttpStatus.NO_CONTENT);
 		}
-		return mapEntityToObject(entity.get());
+		return mapEntityToObject1(entity.get());
 
 	}
 
 	public Course updateRecordIntocourseTable(Course course) {
-		CourseEntity entity = courseRepository.save(mapObjectToEntity(course));
-		return mapEntityToObject(entity);
+		CourseEntity entity = courseRepository.save(mapObjectToEntity1(course));
+		return mapEntityToObject1(entity);
 
+	}
+	
+	
+	public int add(int a, int b)
+	{
+		int sum = a+b;
+		return sum;
+	
 	}
 
 	
@@ -218,7 +285,7 @@ public class CourseService {
 	      ArrayList<Course> i1=new ArrayList<Course>(i);
 	      while(i>=0)
 	      {
-	    	  i1.add(mapEntityToObject(entity.get(i)));
+	    	  i1.add(mapEntityToObject1(entity.get(i)));
 	    	  i--;
 	      }
 	      return i1;

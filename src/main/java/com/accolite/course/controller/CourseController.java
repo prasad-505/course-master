@@ -3,6 +3,7 @@ package com.accolite.course.controller;
 import java.util.List;
 
 
+
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -17,11 +18,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.accolite.course.entities.CourseEntity;
+import com.accolite.course.entities.StudentEntity;
 import com.accolite.course.exception.NoContentException;
 import com.accolite.course.models.Course;
 import com.accolite.course.models.Student;
 import com.accolite.course.models.Mail;
 import com.accolite.course.repositories.CourseRepository;
+import com.accolite.course.repositories.StudentRepository;
 import com.accolite.course.service.CourseService;
 
 @RestController
@@ -36,14 +39,24 @@ public class CourseController {
 	
 	
 	
+	
 	@GetMapping("/mail/{to}/{body}/{sub}")
 	public void send(@PathVariable("to") String to,@PathVariable("body") String body,@PathVariable("sub") String sub)
 	{
 		courseService.sendmail(to,body,sub);
 	}
 	
+	@GetMapping("/mail/{body}/{sub}")
+	public void sendall(@PathVariable("body") String body,@PathVariable("sub") String sub) throws NoContentException
+	{
+		courseService.sendmail2(body,sub);
+	}
+
+	
+
+	
 	@PostMapping("/save")
-	public ResponseEntity<Course> savethedata(@RequestBody Course course) {
+	public ResponseEntity<Course> savethedata(@RequestBody Course course) throws NoContentException {
 		return new ResponseEntity<>(courseService.saveIntocourseItemTable(course), HttpStatus.OK);
 	}
 	
@@ -64,15 +77,39 @@ public class CourseController {
 		return new ResponseEntity<>(courseData, HttpStatus.OK);
 	}
 	
+	@GetMapping("/student")
+	public ResponseEntity<List<Student>> getStudent() {
+		List<Student> courseData = null;
+		try {
+			courseData = courseService.getStudents();
+		} catch (NoContentException e) {
+			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+		}
+		return new ResponseEntity<>(courseData, HttpStatus.OK);
+	}
 	
 	
-	@GetMapping(path = "getmul/{location}")
+	
+	@GetMapping(path = "getloc/{location}")
 	public ResponseEntity<List<Course>> fetloc(@PathVariable("location") String loc) throws NoContentException
 	{
 		List<Course> courseData = null;
 		try
 		{
 			courseData = courseService.fetmul(loc);
+		}catch(NoContentException a) {
+			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+		}
+		return new ResponseEntity<>(courseData, HttpStatus.OK);
+	}
+	
+	@GetMapping(path = "getemail/{email}")
+	public ResponseEntity<List<Student>> findemail(@PathVariable("email") String email) throws NoContentException
+	{
+		List<Student> courseData = null;
+		try
+		{
+			courseData = courseService.stubyemail(email);
 		}catch(NoContentException a) {
 			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 		}
